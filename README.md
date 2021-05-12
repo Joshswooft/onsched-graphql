@@ -28,6 +28,8 @@ npm run-script build
 npm run-script start
 ```
 
+![Screenshot 2021-05-12 095024](https://user-images.githubusercontent.com/60711758/117946794-85734880-b307-11eb-8f3f-ef5bbc0f71d7.png)
+
 ## Available Scripts
 
 - `clean` - remove coverage data, Jest cache and transpiled files,
