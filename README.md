@@ -13,9 +13,19 @@
 
 This project is intended to be used with the latest Active LTS release of [Node.js][nodejs].
 
+Make a `.env` file at the root of your project and add the following:
+
+```sh
+CLIENT_ID=<client_id>
+CLIENT_SECRET=<client_secret>
+ONSCHED_AUTH_API_URL=https://sandbox-identity.onsched.com/
+ONSCHED_CONSUMER_API_URL=https://sandbox-api.onsched.com
+```
 
 ```sh
 npm install
+npm run-script build
+npm run-script start
 ```
 
 ## Available Scripts
@@ -26,7 +36,6 @@ npm install
 - `lint` - lint source files and tests,
 - `test` - run tests,
 - `test:watch` - interactive watch mode to automatically re-run tests
-
 
 ## License
 
