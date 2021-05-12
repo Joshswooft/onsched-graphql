@@ -1,32 +1,38 @@
-/**
- * Some predefined delays (in milliseconds).
- */
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
-}
+import * as express from 'express';
+import { graphqlHTTP } from 'express-graphql';
+import createSchema from 'swagger-to-graphql';
+import { callBackend } from './proxy';
 
-/**
- * Returns a Promise<string> that resolves after given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - Number of milliseconds to delay resolution of the Promise.
- * @returns {Promise<string>}
- */
-function delayedHello(
-  name: string,
-  delay: number = Delays.Medium,
-): Promise<string> {
-  return new Promise((resolve: (value?: string) => void) =>
-    setTimeout(() => resolve(`Hello, ${name}`), delay),
-  );
-}
+const app = express();
+// https://sandbox-api.onsched.com/swagger/setup/swagger.json
+const pathToSwaggerSchema = process.env.ONSCHED_CONSUMER_API_URL + "/swagger/setup/swagger.json";
 
-// Below are examples of using ESLint errors suppression
-// Here it is suppressing missing return type definitions for greeter function
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export async function greeter(name: string) {
-  return await delayedHello(name, Delays.Long);
-}
+createSchema({
+  swaggerSchema: pathToSwaggerSchema,
+  callBackend
+})
+  .then(schema => {
+    app.use(
+      '/graphql',
+      graphqlHTTP(() => {
+        return {
+          schema,
+          graphiql: true,
+          customFormatErrorFn: (error) => ({
+            message: error.message,
+            locations: error.locations,
+            stack: error.stack ? error.stack.split('\n') : [],
+            path: error.path,
+          }),
+          context: {
+          }
+        };
+      }),
+    );
+    app.listen(3009, 'localhost', () => {
+      console.info('http://localhost:3009/graphql');
+    });
+  })
+  .catch(e => {
+    console.log(e);
+  });
